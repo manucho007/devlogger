@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LogService } from 'src/app/services/log.service';
 
 @Component({
   selector: 'app-log-form',
@@ -7,9 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LogFormComponent implements OnInit {
   text: string;
-  constructor() {}
+  id: string;
+  date: Date;
+  constructor(private logService: LogService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Subscribe to the selectedLog Observable
+    this.logService.selectedLog.subscribe((log) => {
+      if (log.id !== null) {
+        this.id = log.id;
+        this.text = log.text;
+        this.date = log.date;
+      }
+    });
+  }
 
   onSubmit() {}
 

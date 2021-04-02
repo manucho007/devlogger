@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Log } from 'src/app/models/Log';
+import { LogService } from 'src/app/services/log.service';
 
 @Component({
   selector: 'app-logs',
@@ -7,13 +8,17 @@ import { Log } from 'src/app/models/Log';
   styleUrls: ['./logs.component.css'],
 })
 export class LogsComponent implements OnInit {
-  loaded: boolean;
+  loaded: boolean = true;
   logs: Log[];
   selectedLog: Log;
-  constructor() {}
+  constructor(private logService: LogService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.logService.getLogs().subscribe((logs) => (this.logs = logs));
+  }
 
-  onSelect(log: Log) {}
+  onSelect(log: Log) {
+    this.logService.setFormLog(log);
+  }
   onDelete(log: Log) {}
 }
