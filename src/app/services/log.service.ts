@@ -13,31 +13,59 @@ export class LogService {
     date: null,
   });
   selectedLog = this.logSource.asObservable();
+
+  // To track the state of the form
+  private stateSource = new BehaviorSubject<boolean>(true);
+  stateClear = this.stateSource.asObservable();
   constructor() {
-    this.logs = [
-      {
-        id: '1',
-        text: 'Generated Components',
-        date: new Date(),
-      },
-      {
-        id: '2',
-        text: 'Added Bootstrap',
-        date: new Date(),
-      },
-      {
-        id: '3',
-        text: 'Created Service',
-        date: new Date(),
-      },
-    ];
+    this.logs = [];
   }
 
   getLogs(): Observable<Log[]> {
-    return of(this.logs);
+    if (localStorage.getItem('logs') === null) {
+      this.logs = [];
+    } else {
+      this.logs = JSON.parse(localStorage.getItem('logs'));
+    }
+    return of(
+      this.logs.sort((a, b) => {
+        return a.date - b.date;
+      })
+    );
   }
 
   setFormLog(log: Log) {
     this.logSource.next(log);
+  }
+
+  addLog(log: Log) {
+    this.logs.unshift(log);
+    // Add to localstorage
+    localStorage.setItem('logs', JSON.stringify(this.logs));
+  }
+
+  updateLog(log: Log) {
+    this.logs.forEach((curr, index) => {
+      if (log.id === curr.id) {
+        this.logs.splice(index, 1);
+      }
+    });
+    this.logs.unshift(log);
+    // Update to localstorage
+    localStorage.setItem('logs', JSON.stringify(this.logs));
+  }
+
+  deleteLog(log: Log) {
+    this.logs.forEach((curr, index) => {
+      if (log.id === curr.id) {
+        this.logs.splice(index, 1);
+      }
+    });
+    // Update to localstorage
+    localStorage.setItem('logs', JSON.stringify(this.logs));
+  }
+
+  clearState() {
+    this.stateSource.next(true);
   }
 }
